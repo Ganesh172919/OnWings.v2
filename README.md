@@ -8,7 +8,7 @@ A modern, full-featured flight booking web application built with React, Redux T
 - **Advanced Flight Search** - Search flights by origin, destination, dates, and passenger count
 - **Real-time Results** - Instant flight results with detailed information
 - **Multi-step Booking Process** - Seamless booking flow with passenger details, seat selection, and payment
-- **Seat Selection** - Interactive seat map for choosing preferred seats
+- **Seat Selection** - Interactive seat map for choosing preferred seat
 - **Luggage Management** - Add and customize luggage options
 - **Price Calculator** - Dynamic pricing with real-time updates
 
