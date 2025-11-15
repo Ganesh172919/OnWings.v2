@@ -58,33 +58,6 @@ const features = [
   { icon: <Award className="w-8 h-8 text-red-500" />, title: 'Award Winning', description: 'Trusted by over 1 million passengers worldwide.'},
 ];
 
-// Smart Travel Tools data
-const travelTools = [
-  { 
-    icon: <Brain className="w-10 h-10 text-blue-500" />, 
-    title: 'AI Fare Predictor', 
-    description: 'Smart algorithms predict the best time to book.',
-    badge: 'AI Powered'
-  },
-  { 
-    icon: <Eye className="w-10 h-10 text-purple-500" />, 
-    title: 'Real-Time Seat Insights', 
-    description: 'Live seat availability and premium upgrades.',
-    badge: 'Live'
-  },
-  { 
-    icon: <Calculator className="w-10 h-10 text-green-500" />, 
-    title: 'Baggage Calculator', 
-    description: 'Calculate costs and optimize your luggage.',
-    badge: 'Smart'
-  },
-  { 
-    icon: <Headphones className="w-10 h-10 text-orange-500" />, 
-    title: 'Travel Assistant', 
-    description: '24/7 support for all your travel needs.',
-    badge: '24/7'
-  },
-];
 
 // Airlines logos (placeholder - replace with actual logo paths)
 const partnerAirlines = [
@@ -395,77 +368,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ===== 4. SMART TRAVEL TOOLS SECTION ===== */}
-      <section ref={smartToolsRef} className="container mx-auto py-24 px-4">
-        <motion.div
-          className="text-center mb-16"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={fadeInUp}
-        >
-          <Badge variant="secondary" className="mb-4 px-4 py-1 text-sm">
-            <Sparkles className="w-3 h-3 inline mr-2" />
-            Powered by AI
-          </Badge>
-          <h2 className="text-black text-4xl md:text-5xl font-bold mb-4">
-            Smart Travel Tools
-          </h2>
-          <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-            Advanced technology to enhance every aspect of your journey
-          </p>
-        </motion.div>
-
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-          initial="hidden"
-          animate={isSmartToolsInView ? "visible" : "hidden"}
-          variants={staggerContainer}
-        >
-          {travelTools.map((tool, index) => (
-            <motion.div
-              key={tool.title}
-              variants={fadeInUp}
-              whileHover={{ 
-                scale: 1.05,
-                rotateY: 5,
-                z: 50,
-                transition: { duration: 0.3, type: 'spring' }
-              }}
-              className="group"
-            >
-              <Card className="h-full bg-white hover:bg-gradient-to-br hover:from-slate-50 hover:to-white border-slate-200 hover:border-slate-300 hover:shadow-2xl transition-all duration-500 relative overflow-hidden">
-                {/* Magnetic hover effect background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 via-purple-500/0 to-red-500/0 group-hover:from-blue-500/5 group-hover:via-purple-500/5 group-hover:to-red-500/5 transition-all duration-700" />
-                
-                <CardHeader className="relative">
-                  <Badge className="absolute top-4 right-4 bg-slate-100 text-slate-700 hover:bg-slate-200">
-                    {tool.badge}
-                  </Badge>
-                  <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                    {tool.icon}
-                  </div>
-                  <CardTitle className="text-xl text-slate-800 group-hover:text-slate-900">
-                    {tool.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="relative">
-                  <p className="text-slate-600 group-hover:text-slate-700">
-                    {tool.description}
-                  </p>
-                  <Button 
-                    variant="ghost" 
-                    className="mt-4 group/btn hover:bg-slate-100"
-                  >
-                    Learn More
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
+      
 
       {/* ===== 5. AIRLINES WE PARTNER WITH SECTION ===== */}
       <section className="bg-slate-50 py-20">
