@@ -10,6 +10,7 @@ const FlightResultsPage = lazy(() => import("./pages/FlightResultsPage"));
 const BookingPage = lazy(() => import("./pages/BookingPage"));
 const PaymentPage = lazy(() => import("./pages/PaymentPage"));
 const ConfirmationPage = lazy(() => import("./pages/ConfirmationPage"));
+const MyTrips = lazy(() => import("./pages/MyTrips"));
 const LoginModal = lazy(() => import("./components/auth/LoginModal"));
 const SignupModal = lazy(() => import("./components/auth/SignupModal"));
 
@@ -38,6 +39,7 @@ function App() {
               path="/confirmation/:bookingId"
               element={<ConfirmationPage />}
             />
+            <Route path="/my-trips" element={<MyTrips />} />
           </Routes>
         </Suspense>
       </main>

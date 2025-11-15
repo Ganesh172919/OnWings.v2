@@ -1,17 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
+import { motion } from 'framer-motion'
 import { 
   selectLastBooking, 
   clearBooking 
 } from '../store/slices/bookingSlice'
-import { CheckCircle, Download } from 'lucide-react'
+import { addTrip } from '../store/slices/tripsSlice'
+import { CheckCircle, Download, Plane } from 'lucide-react'
 import FlightTicket from '../components/common/FlightTicket'
 import { downloadTicketAsPDF } from '../utils/downloadTicket'
+import { transformBookingToTrip } from '../utils/transformBookingToTrip'
 
 const ConfirmationPage = () => {
   const { bookingId } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const lastBooking = useSelector(selectLastBooking);
   const ticketRef = useRef(null);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -60,16 +64,34 @@ const ConfirmationPage = () => {
           <FlightTicket booking={lastBooking} /> 
         </div>
 
-        <div className="flex gap-4 justify-center mt-8">
-          <button 
-            className="bg-red-700 text-white font-semibold py-3 px-6 rounded-none flex items-center hover:bg-white hover:text-red-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+          <motion.button 
+            className="bg-red-700 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center hover:bg-red-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             onClick={handleDownloadTicket}
             disabled={isDownloading}
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
           >
             <Download className="h-5 w-5 mr-2" />
             {isDownloading ? 'Downloading...' : 'Download Ticket'}
-          </button>
-          <Link to="/" className="bg-gray-700 text-white/80 font-semibold py-3 px-6 rounded-none hover:bg-gray-600 transition-all">
+          </motion.button>
+          
+          <motion.button
+            className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-all shadow-lg"
+            onClick={() => {
+              // Use canonical transformer to ensure consistent trip shape
+              const trip = transformBookingToTrip(lastBooking);
+              dispatch(addTrip(trip));
+              navigate('/my-trips');
+            }}
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Plane className="h-5 w-5 mr-2" />
+            Save & View Trips
+          </motion.button>
+          
+          <Link to="/" className="bg-gray-700 text-white/80 font-semibold py-3 px-6 rounded-lg hover:bg-gray-600 transition-all flex items-center justify-center">
             Back to Home
           </Link>
         </div>
