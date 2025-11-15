@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ArkDatePicker } from '../components/common/ArkDatePicker';
+import { useToast } from '@/hooks/use-toast';
+import { Toaster } from '@/components/ui/toaster';
 import {
   Select,
   SelectContent,
@@ -33,7 +35,7 @@ const privateAircraft = [
     name: 'Citation CJ3',
     type: 'Light Jet',
     capacity: '6-7 Passengers',
-    image: 'https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=800&q=80',
+    image: '/images/citation-cj.png',
     description: 'Perfect for short to medium-range flights with superior comfort and speed.',
     features: ['WiFi', 'Refreshments', 'Leather Seats'],
     priceRange: '₹2.5L - ₹4L/hour',
@@ -43,7 +45,7 @@ const privateAircraft = [
     name: 'Gulfstream G650',
     type: 'Heavy Jet',
     capacity: '14-18 Passengers',
-    image: 'https://images.unsplash.com/photo-1583377361480-8423a5c91c73?w=800&q=80',
+    image: '/images/gulfstream.png',
     description: 'Ultimate luxury for long-range international travel with spacious cabin.',
     features: ['Full Galley', 'Private Suite', 'Conference Room', 'Entertainment System'],
     priceRange: '₹8L - ₹12L/hour',
@@ -53,7 +55,7 @@ const privateAircraft = [
     name: 'King Air 350',
     type: 'Turboprop',
     capacity: '8-10 Passengers',
-    image: 'https://images.unsplash.com/photo-1583377381500-1d7a5d0b0d20?w=800&q=80',
+    image: '/images/king-air-350.png',
     description: 'Reliable and efficient for regional travel with excellent runway performance.',
     features: ['Pressurized Cabin', 'WiFi', 'Refreshments'],
     priceRange: '₹1.5L - ₹2.5L/hour',
@@ -63,7 +65,7 @@ const privateAircraft = [
     name: 'Bell 407 Helicopter',
     type: 'Helicopter',
     capacity: '6 Passengers',
-    image: 'https://images.unsplash.com/photo-1520016569399-a1a46d5e90e1?w=800&q=80',
+    image: '/images/bell-407-helicopter.png',
     description: 'Ideal for short-distance travel, city transfers, and scenic tours.',
     features: ['Leather Interior', 'Air Conditioning', 'Noise Reduction'],
     priceRange: '₹1L - ₹1.8L/hour',
@@ -73,7 +75,7 @@ const privateAircraft = [
     name: 'Embraer Phenom 300',
     type: 'Light Jet',
     capacity: '7-9 Passengers',
-    image: 'https://images.unsplash.com/photo-1583377361480-8423a5c91c73?w=800&q=80',
+    image: '/images/embreaer-phenom-300.png',
     description: 'Best-selling light jet with excellent range and modern avionics.',
     features: ['WiFi', 'Lavatory', 'Full Refreshment Service', 'Entertainment'],
     priceRange: '₹3L - ₹5L/hour',
@@ -83,7 +85,7 @@ const privateAircraft = [
     name: 'Airbus H145 Helicopter',
     type: 'Helicopter',
     capacity: '8 Passengers',
-    image: 'https://images.unsplash.com/photo-1504466759105-eb513185f6f3?w=800&q=80',
+    image: '/images/airbus-h-145-helicopter.png',
     description: 'Spacious twin-engine helicopter for VIP transport and corporate travel.',
     features: ['VIP Interior', 'Climate Control', 'Advanced Avionics', 'Quiet Cabin'],
     priceRange: '₹1.5L - ₹2.5L/hour',
@@ -91,6 +93,8 @@ const privateAircraft = [
 ];
 
 const PrivateBookingPage = () => {
+  const { toast } = useToast();
+  const formRef = useRef(null);
   const [tripType, setTripType] = useState('oneWay');
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
@@ -99,6 +103,26 @@ const PrivateBookingPage = () => {
   const [passengers, setPassengers] = useState('1');
   const [aircraftType, setAircraftType] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleRequestQuoteClick = (aircraft) => {
+    const typeMap = {
+      'Light Jet': 'jet',
+      'Heavy Jet': 'jet',
+      Turboprop: 'turboprop',
+      Helicopter: 'helicopter',
+    };
+    if (typeMap[aircraft.type]) setAircraftType(typeMap[aircraft.type]);
+
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    toast({
+      title: 'Fill your details',
+      description:
+        'Please complete the flight details form. Our employee will contact you shortly.',
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -152,7 +176,7 @@ const PrivateBookingPage = () => {
       </motion.section>
 
       {/* Booking Form Section */}
-      <section className="container mx-auto px-4 -mt-20 relative z-20 mb-16">
+      <section ref={formRef} className="container mx-auto px-4 -mt-20 relative z-20 mb-16">
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -456,7 +480,7 @@ const PrivateBookingPage = () => {
 
                   <div className="mt-auto">
                     <p className="text-red-500 font-bold mb-3">{aircraft.priceRange}</p>
-                    <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+                    <Button onClick={() => handleRequestQuoteClick(aircraft)} className="w-full bg-red-600 hover:bg-red-700 text-white">
                       Request Quote
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -496,6 +520,7 @@ const PrivateBookingPage = () => {
           </Card>
         </motion.div>
       </section>
+    <Toaster />
     </div>
   );
 };
