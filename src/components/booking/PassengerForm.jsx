@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectPassengers,
@@ -6,14 +6,54 @@ import {
   updatePassenger,
   removePassenger,
 } from "../../store/slices/bookingSlice";
-import { UserPlus, X } from "lucide-react";
+import { UserPlus, X, AlertCircle } from "lucide-react";
+import { validateName, validateAge, validateGender } from "../../utils/validation";
 
 const PassengerForm = () => {
   const passengers = useSelector(selectPassengers);
   const dispatch = useDispatch();
+  const [errors, setErrors] = useState({});
 
   const handleUpdate = (id, field, value) => {
     dispatch(updatePassenger({ id, field, value }));
+    // Clear error for this field when user starts typing
+    setErrors(prev => ({
+      ...prev,
+      [`${id}-${field}`]: ""
+    }));
+  };
+
+  const validateField = (id, field, value) => {
+    let error = "";
+    switch (field) {
+      case "firstName":
+        error = validateName(value, "First name");
+        break;
+      case "lastName":
+        error = validateName(value, "Last name");
+        break;
+      case "age":
+        error = validateAge(value);
+        break;
+      case "gender":
+        error = validateGender(value);
+        break;
+      default:
+        break;
+    }
+    setErrors(prev => ({
+      ...prev,
+      [`${id}-${field}`]: error
+    }));
+    return error;
+  };
+
+  const handleBlur = (id, field, value) => {
+    validateField(id, field, value);
+  };
+
+  const getError = (id, field) => {
+    return errors[`${id}-${field}`] || "";
   };
 
   return (
@@ -52,10 +92,19 @@ const PassengerForm = () => {
             </label>
             <input
               type="text"
-              className="mt-1 block w-full p-2 sm:p-3 bg-transparent border-0 border-b-2 border-gray-500 focus:border-red-500 focus:ring-0 rounded-none text-black text-sm sm:text-base"
+              className={`mt-1 block w-full p-2 sm:p-3 bg-transparent border-0 border-b-2 ${
+                getError(p.id, "firstName") ? "border-red-600" : "border-gray-500"
+              } focus:border-red-500 focus:ring-0 rounded-none text-black text-sm sm:text-base`}
               value={p.firstName}
               onChange={(e) => handleUpdate(p.id, "firstName", e.target.value)}
+              onBlur={(e) => handleBlur(p.id, "firstName", e.target.value)}
             />
+            {getError(p.id, "firstName") && (
+              <div className="flex items-center mt-1 text-red-600 text-xs">
+                <AlertCircle className="h-3 w-3 mr-1" />
+                {getError(p.id, "firstName")}
+              </div>
+            )}
           </div>
 
           <div className="sm:col-span-1 md:col-span-2">
@@ -64,10 +113,19 @@ const PassengerForm = () => {
             </label>
             <input
               type="text"
-              className="mt-1 block w-full p-2 sm:p-3 bg-transparent border-0 border-b-2 border-gray-500 focus:border-red-500 focus:ring-0 rounded-none text-black text-sm sm:text-base"
+              className={`mt-1 block w-full p-2 sm:p-3 bg-transparent border-0 border-b-2 ${
+                getError(p.id, "lastName") ? "border-red-600" : "border-gray-500"
+              } focus:border-red-500 focus:ring-0 rounded-none text-black text-sm sm:text-base`}
               value={p.lastName}
               onChange={(e) => handleUpdate(p.id, "lastName", e.target.value)}
+              onBlur={(e) => handleBlur(p.id, "lastName", e.target.value)}
             />
+            {getError(p.id, "lastName") && (
+              <div className="flex items-center mt-1 text-red-600 text-xs">
+                <AlertCircle className="h-3 w-3 mr-1" />
+                {getError(p.id, "lastName")}
+              </div>
+            )}
           </div>
 
           <div className="sm:col-span-1">
@@ -76,10 +134,19 @@ const PassengerForm = () => {
             </label>
             <input
               type="number"
-              className="mt-1 block w-full p-2 sm:p-3 bg-transparent border-0 border-b-2 border-gray-500 focus:border-red-500 focus:ring-0 rounded-none text-black text-sm sm:text-base"
+              className={`mt-1 block w-full p-2 sm:p-3 bg-transparent border-0 border-b-2 ${
+                getError(p.id, "age") ? "border-red-600" : "border-gray-500"
+              } focus:border-red-500 focus:ring-0 rounded-none text-black text-sm sm:text-base`}
               value={p.age}
               onChange={(e) => handleUpdate(p.id, "age", e.target.value)}
+              onBlur={(e) => handleBlur(p.id, "age", e.target.value)}
             />
+            {getError(p.id, "age") && (
+              <div className="flex items-center mt-1 text-red-600 text-xs">
+                <AlertCircle className="h-3 w-3 mr-1" />
+                {getError(p.id, "age")}
+              </div>
+            )}
           </div>
 
           <div className="sm:col-span-1 md:col-span-2">
@@ -87,15 +154,24 @@ const PassengerForm = () => {
               Gender
             </label>
             <select
-              className="mt-1 block w-full p-2 sm:p-3 bg-white border-0 border-b-2 border-gray-500 focus:border-red-500 focus:ring-0 rounded-none text-black text-sm sm:text-base"
+              className={`mt-1 block w-full p-2 sm:p-3 bg-white border-0 border-b-2 ${
+                getError(p.id, "gender") ? "border-red-600" : "border-gray-500"
+              } focus:border-red-500 focus:ring-0 rounded-none text-black text-sm sm:text-base`}
               value={p.gender}
               onChange={(e) => handleUpdate(p.id, "gender", e.target.value)}
+              onBlur={(e) => handleBlur(p.id, "gender", e.target.value)}
             >
               <option value="">Select...</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Other">Other</option>
             </select>
+            {getError(p.id, "gender") && (
+              <div className="flex items-center mt-1 text-red-600 text-xs">
+                <AlertCircle className="h-3 w-3 mr-1" />
+                {getError(p.id, "gender")}
+              </div>
+            )}
           </div>
         </div>
       ))}
