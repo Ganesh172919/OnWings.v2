@@ -11,6 +11,7 @@ import { CheckCircle, Download, Plane } from 'lucide-react'
 import FlightTicket from '../components/common/FlightTicket'
 import { downloadTicketAsPDF } from '../utils/downloadTicket'
 import { transformBookingToTrip } from '../utils/transformBookingToTrip'
+import { Button } from '@/components/ui/button'
 
 const ConfirmationPage = () => {
   const { bookingId } = useParams();
@@ -76,20 +77,19 @@ const ConfirmationPage = () => {
             {isDownloading ? 'Downloading...' : 'Download Ticket'}
           </motion.button>
           
-          <motion.button
-            className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-all shadow-lg"
-            onClick={() => {
-              // Use canonical transformer to ensure consistent trip shape
-              const trip = transformBookingToTrip(lastBooking);
-              dispatch(addTrip(trip));
-              navigate('/my-trips');
-            }}
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Plane className="h-5 w-5 mr-2" />
-            Save & View Trips
-          </motion.button>
+          <motion.div whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center shadow-lg"
+              onClick={() => {
+                const trip = transformBookingToTrip(lastBooking);
+                dispatch(addTrip(trip));
+                navigate('/my-trips');
+              }}
+            >
+              <Plane className="h-5 w-5 mr-2" />
+              Save & View Trips
+            </Button>
+          </motion.div>
           
           <Link to="/" className="bg-gray-700 text-white/80 font-semibold py-3 px-6 rounded-lg hover:bg-gray-600 transition-all flex items-center justify-center">
             Back to Home

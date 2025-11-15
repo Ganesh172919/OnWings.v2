@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const MyTrips = () => {
   const dispatch = useDispatch();
@@ -36,14 +37,25 @@ const MyTrips = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState('newest');
   const [showLoadSample, setShowLoadSample] = useState(false);
 
   useEffect(() => {
-    // Check if trips are empty and show option to load sample data
+    // Auto-load mock trips once per browser if not already loaded
+    try {
+      const loaded = localStorage.getItem('ow_trips_mock_loaded');
+      if (loaded !== '1') {
+        dispatch(addTrips(mockTrips));
+        localStorage.setItem('ow_trips_mock_loaded', '1');
+      }
+    } catch {}
+    // If still empty (first visit, before dispatch resolves), show load option
     if (allTrips.length === 0) {
       setShowLoadSample(true);
+    } else {
+      setShowLoadSample(false);
     }
-  }, [allTrips.length]);
+  }, [allTrips.length, dispatch]);
 
   useEffect(() => {
     // Apply filters
@@ -54,16 +66,29 @@ const MyTrips = () => {
       filtered = filtered.filter(trip => trip.status === statusFilter);
     }
 
-    // Search filter (destination city)
+    // Search filter: city, code, airline, flightNo, bookingId
     if (searchQuery.trim()) {
-      filtered = filtered.filter(trip => 
-        trip.to.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        trip.from.city.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(trip => (
+        (trip.to?.city || '').toLowerCase().includes(q) ||
+        (trip.from?.city || '').toLowerCase().includes(q) ||
+        (trip.to?.code || '').toLowerCase().includes(q) ||
+        (trip.from?.code || '').toLowerCase().includes(q) ||
+        (trip.airline || '').toLowerCase().includes(q) ||
+        (trip.flightNo || '').toLowerCase().includes(q) ||
+        (trip.bookingId || '').toLowerCase().includes(q)
+      ));
     }
 
+    // Sort by departAt (date) newest -> oldest by default
+    filtered.sort((a, b) => {
+      const da = new Date(a.departAt).getTime();
+      const db = new Date(b.departAt).getTime();
+      return sortOrder === 'newest' ? db - da : da - db;
+    });
+
     setFilteredTrips(filtered);
-  }, [allTrips, statusFilter, searchQuery]);
+  }, [allTrips, statusFilter, searchQuery, sortOrder]);
 
   const handleViewDetails = (trip) => {
     setSelectedTrip(trip);
@@ -177,6 +202,18 @@ const MyTrips = () => {
               Your complete travel history and upcoming journeys
             </p>
 
+            {/* Status Tabs */}
+            <div className="mt-4">
+              <Tabs value={statusFilter} onValueChange={setStatusFilter}>
+                <TabsList className="bg-white/15 backdrop-blur-sm">
+                  <TabsTrigger value="All">All</TabsTrigger>
+                  <TabsTrigger value="Completed">Completed</TabsTrigger>
+                  <TabsTrigger value="Upcoming">Upcoming</TabsTrigger>
+                  <TabsTrigger value="Cancelled">Cancelled</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+
             {/* Metrics Row */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
               <motion.div
@@ -284,19 +321,31 @@ const MyTrips = () => {
 
                 {/* Search Filter */}
                 <div>
-                  <label className="text-sm font-medium text-slate-700 mb-2 block">
-                    Search Destination
-                  </label>
+                  <label className="text-sm font-medium text-slate-700 mb-2 block">Search Trips</label>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <Input
                       type="text"
-                      placeholder="Search by city..."
+                      placeholder="City, airline, flight no, booking id..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10"
                     />
                   </div>
+                </div>
+
+                {/* Sort Order */}
+                <div>
+                  <label className="text-sm font-medium text-slate-700 mb-2 block">Sort</label>
+                  <Select value={sortOrder} onValueChange={setSortOrder}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">Newest → Oldest</SelectItem>
+                      <SelectItem value="oldest">Oldest → Newest</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardContent>
             </Card>
