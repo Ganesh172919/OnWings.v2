@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { fetchFlights } from "../../store/slices/flightSlice";
-import { Search, ArrowRightLeft } from "lucide-react";
+import { Search, ArrowRightLeft, ChevronDown, Plus, Minus } from "lucide-react";
 import { airports } from "../../data/airports";
 import { ArkDatePicker } from "../common/ArkDatePicker";
 
@@ -19,18 +19,36 @@ const FlightSearchForm = () => {
 
   const [returnDate, setReturnDate] = useState(null);
 
-  const [passengers, setPassengers] = useState("1 Adult");
+  const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const [isPassengerDropdownOpen, setIsPassengerDropdownOpen] = useState(false);
 
   const [fromSuggestions, setFromSuggestions] = useState([]);
   const [toSuggestions, setToSuggestions] = useState([]);
 
+  const passengerDropdownRef = useRef(null);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (passengerDropdownRef.current && !passengerDropdownRef.current.contains(event.target)) {
+        setIsPassengerDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const isRoundTrip = tripType === "roundTrip";
-    if (!from || !to || !date || (isRoundTrip && !returnDate) || !passengers) {
+    const totalPassengers = adults + children;
+    const passengers = `${adults} Adult${adults > 1 ? 's' : ''}${children > 0 ? `, ${children} Child${children > 1 ? 'ren' : ''}` : ''}`;
+    
+    if (!from || !to || !date || (isRoundTrip && !returnDate) || totalPassengers === 0) {
       setError("Please fill in all fields.");
       return;
     }
@@ -91,6 +109,18 @@ const FlightSearchForm = () => {
   const onToSuggestionClick = (airport) => {
     setTo(airport.code);
     setToSuggestions([]);
+  };
+
+  const incrementAdults = () => setAdults(prev => prev + 1);
+  const decrementAdults = () => setAdults(prev => Math.max(0, prev - 1));
+  const incrementChildren = () => setChildren(prev => prev + 1);
+  const decrementChildren = () => setChildren(prev => Math.max(0, prev - 1));
+
+  const getPassengerText = () => {
+    const parts = [];
+    if (adults > 0) parts.push(`${adults} Adult${adults > 1 ? 's' : ''}`);
+    if (children > 0) parts.push(`${children} Child${children > 1 ? 'ren' : ''}`);
+    return parts.length > 0 ? parts.join(', ') : 'Select passengers';
   };
 
   const activeTripButton =
@@ -242,6 +272,7 @@ const FlightSearchForm = () => {
       {/* --- Passengers Field --- */}
       <div
         className={tripType === "oneWay" ? "md:col-span-3" : "md:col-span-2"}
+        ref={passengerDropdownRef}
       >
         <label
           htmlFor="passengers"
@@ -249,14 +280,68 @@ const FlightSearchForm = () => {
         >
           Passengers
         </label>
-        <input
-          type="text"
-          id="passengers"
-          value={passengers}
-          onChange={(e) => setPassengers(e.target.value)}
-          placeholder="e.g., 2 Adults"
-          className="mt-1 block w-full p-2 sm:p-3 bg-transparent border-0 border-b-2 border-gray-400 focus:border-red-600 focus:ring-0 rounded-none text-slate-900 text-sm sm:text-base placeholder:text-slate-400"
-        />
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setIsPassengerDropdownOpen(!isPassengerDropdownOpen)}
+            className="mt-1 block w-full p-2 sm:p-3 bg-transparent border-0 border-b-2 border-gray-400 focus:border-red-600 rounded-none text-slate-900 text-sm sm:text-base text-left flex items-center justify-between"
+          >
+            <span className={adults + children === 0 ? "text-slate-400" : ""}>
+              {getPassengerText()}
+            </span>
+            <ChevronDown className={`h-4 w-4 transition-transform ${isPassengerDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+          
+          {isPassengerDropdownOpen && (
+            <div className="absolute z-20 w-full bg-white shadow-lg border border-gray-200 mt-1 rounded-lg p-4 space-y-4">
+              {/* Adults Counter */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-700">Adults</span>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={decrementAdults}
+                    className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={adults === 0}
+                  >
+                    <Minus className="h-4 w-4 text-slate-700" />
+                  </button>
+                  <span className="w-8 text-center font-semibold text-slate-900">{adults}</span>
+                  <button
+                    type="button"
+                    onClick={incrementAdults}
+                    className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 hover:bg-gray-100"
+                  >
+                    <Plus className="h-4 w-4 text-slate-700" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Children Counter */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-700">Children</span>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={decrementChildren}
+                    className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={children === 0}
+                  >
+                    <Minus className="h-4 w-4 text-slate-700" />
+                  </button>
+                  <span className="w-8 text-center font-semibold text-slate-900">{children}</span>
+                  <button
+                    type="button"
+                    onClick={incrementChildren}
+                    className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 hover:bg-gray-100"
+                  >
+                    <Plus className="h-4 w-4 text-slate-700" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <motion.button
