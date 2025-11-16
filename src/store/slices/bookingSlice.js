@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { mockFlightApi } from "../../data/mockFlights";
 
-// ... (keep completeBooking thunk) ...
 export const completeBooking = createAsyncThunk(
   "booking/completeBooking",
   async (bookingDetails) => {
@@ -11,7 +10,6 @@ export const completeBooking = createAsyncThunk(
   }
 );
 
-// ... (keep fetchFlightById thunk) ...
 export const fetchFlightById = (flightId) => (dispatch) => {
   dispatch(bookingSlice.actions.setBookingStatus("loading"));
   mockFlightApi({}).then((allFlights) => {
@@ -26,13 +24,11 @@ export const fetchFlightById = (flightId) => (dispatch) => {
 
 const initialState = {
   flight: null,
-  // 1. ADD new fields to the passenger
   passengers: [{ id: 1, firstName: "", lastName: "", age: "", gender: "", category: "Adult" }],
-  // 2. CHANGE selectedSeat: null to selectedSeats: []
   selectedSeats: [],
   status: "idle",
   lastBooking: null,
-  extraBaggage: null, // Add this
+  extraBaggage: null, 
 };
 
 const bookingSlice = createSlice({
@@ -46,7 +42,6 @@ const bookingSlice = createSlice({
 
     removePassenger: (state, action) => {
       const idToRemove = action.payload;
-      // We only allow removal if there is more than 1 passenger
       if (state.passengers.length > 1) {
         state.passengers = state.passengers.filter((p) => p.id !== idToRemove);
       }
@@ -57,7 +52,6 @@ const bookingSlice = createSlice({
     },
     addPassenger: (state) => {
       const newId = state.passengers.length > 0 ? Math.max(...state.passengers.map(p => p.id)) + 1 : 1;
-      // 3. ADD new fields when adding a passenger
       state.passengers.push({
         id: newId,
         firstName: "",
@@ -74,16 +68,14 @@ const bookingSlice = createSlice({
         passenger[field] = value;
       }
     },
-    // 4. RENAME selectSeat to toggleSeat and update logic
+
     toggleSeat: (state, action) => {
       const seatId = action.payload;
       const isSelected = state.selectedSeats.includes(seatId);
 
       if (isSelected) {
-        // If already selected, remove it
         state.selectedSeats = state.selectedSeats.filter((s) => s !== seatId);
       } else {
-        // If not selected, add it ONLY if there is room
         if (state.selectedSeats.length < state.passengers.length) {
           state.selectedSeats.push(seatId);
         }
@@ -94,7 +86,6 @@ const bookingSlice = createSlice({
       state.passengers = [
         { id: 1, firstName: "", lastName: "", age: "", gender: "", category: "Adult" },
       ];
-      // 5. UPDATE to clear selectedSeats
       state.selectedSeats = [];
       state.status = "idle";
     },
@@ -114,9 +105,8 @@ const bookingSlice = createSlice({
         state.passengers = [
           { id: 1, firstName: "", lastName: "", age: "", gender: "", category: "Adult" },
         ];
-        // 5. UPDATE to clear selectedSeats
         state.selectedSeats = [];
-        state.extraBaggage = null; // Also clear baggage
+        state.extraBaggage = null; 
       })
       .addCase(completeBooking.rejected, (state) => {
         state.status = "failed";
@@ -130,18 +120,17 @@ export const {
   addPassenger,
   updatePassenger,
   removePassenger,
-  toggleSeat, // 6. EXPORT new action
+  toggleSeat, 
   clearBooking,
-  addExtraBaggage, // Export new action
+  addExtraBaggage, 
 } = bookingSlice.actions;
 
 // Selectors
 export const selectCurrentFlight = (state) => state.booking.flight;
 export const selectPassengers = (state) => state.booking.passengers;
-// 7. UPDATE selector to get the array
 export const selectSelectedSeats = (state) => state.booking.selectedSeats;
 export const selectBookingStatus = (state) => state.booking.status;
 export const selectLastBooking = (state) => state.booking.lastBooking;
-export const selectExtraBaggage = (state) => state.booking.extraBaggage; // Add this selector
+export const selectExtraBaggage = (state) => state.booking.extraBaggage; 
 
 export default bookingSlice.reducer;
