@@ -18,11 +18,11 @@ const SignupModal = lazy(() => import("./components/auth/SignupModal"));
 
 function App() {
   return (
-    <div className="app min-h-screen">
+    <div className="app min-h-screen bg-transparent">
       <Navbar />
       <LoginModal />
       <SignupModal />
-      <main className="pt-16">
+      <main >
         <Suspense
           fallback={
             <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
