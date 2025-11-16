@@ -1,4 +1,4 @@
-# ✈️ OnWings - Modern Flight Booking System
+# OnWings - Modern Flight Booking System
 
 <div align="center">
 
@@ -16,7 +16,7 @@ A seamless and intuitive flight booking platform built with modern web technolog
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [About The Project](#about-the-project)
 - [Key Features](#key-features)
@@ -31,76 +31,76 @@ A seamless and intuitive flight booking platform built with modern web technolog
 
 ---
 
-## 🎯 About The Project
+## About The Project
 
 OnWings is a comprehensive flight booking system designed to address the common pain points in traditional booking platforms. We've created an intuitive, modern interface that streamlines the entire booking process from search to confirmation.
 
 ### The Problem We Solve
 
-- ❌ Fragmented and confusing user experiences
-- ❌ Poor real-time seat selection interfaces
-- ❌ Lack of transparent pricing information
-- ❌ Complicated multi-step booking processes
+- Fragmented and confusing user experiences
+- Poor real-time seat selection interfaces
+- Lack of transparent pricing information
+- Complicated multi-step booking processes
 
 ### Our Solution
 
-✅ Seamless, guided booking workflow  
-✅ Interactive real-time seat selection  
-✅ Transparent dynamic pricing  
-✅ Modern, responsive design  
-✅ Comprehensive booking management  
+Seamless, guided booking workflow  
+Interactive real-time seat selection  
+Transparent dynamic pricing  
+Modern, responsive design  
+Comprehensive booking management  
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🔍 Smart Flight Search
+### Smart Flight Search
 - Dynamic date selection with custom date picker
 - Route selection with airport autocomplete
 - Flexible search parameters
 
-### 🪑 Real-time Seat Selection
+### Real-time Seat Selection
 - Interactive seat map with live availability
 - Visual seat status indicators (available, selected, occupied)
 - Multi-passenger seat allocation
 - Premium seat options
 
-### 👥 Multi-passenger Booking
+### Multi-passenger Booking
 - Comprehensive passenger information forms
 - Support for multiple travelers
 - Passenger type selection (Adult, Child, Infant)
 - Contact information management
 
-### 💰 Dynamic Pricing System
+### Dynamic Pricing System
 - Real-time price calculation
 - Luggage options with dynamic pricing
 - Tax and fee breakdown
 - Clear price summary
 
-### 🎫 Digital Ticket Generation
+### Digital Ticket Generation
 - Instant booking confirmation
 - Downloadable digital tickets
 - Booking reference numbers
 - Email confirmation (simulated)
 
-### 🔐 User Authentication
+### User Authentication
 - Secure login and signup modals
 - Form validation
 - Session management
 - Protected booking routes
 
-### 🎨 Beautiful UI/UX
+### Beautiful UI/UX
 - Custom shader backgrounds
 - Smooth animations with Framer Motion
 - Responsive design for all devices
 - Intuitive navigation
 
-### ✈️ Private Jet Booking
+### Private Jet Booking
 - Dedicated page for private jet charter
 - Premium booking experience
 - Custom itinerary options
 
-### 📜 My Trips Dashboard
+### My Trips Dashboard
 - View booking history
 - Trip timeline visualization
 - Frosted glass card design
@@ -109,7 +109,7 @@ OnWings is a comprehensive flight booking system designed to address the common 
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - **React 19.1.1** - UI library
@@ -178,7 +178,7 @@ OnWings is a comprehensive flight booking system designed to address the common 
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 OnWings.v2/
@@ -437,7 +437,7 @@ The application uses Redux Toolkit with the following slices:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are what make the open-source community amazing! Any contributions you make are **greatly appreciated**.
 
@@ -494,20 +494,20 @@ This project was developed by a collaborative team of developers, each contribut
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-## 🔗 Links
+## Links
 
 - **Repository**: [https://github.com/ashishbongu/OnWings](https://github.com/ashishbongu/OnWings)
 - **Issues**: [https://github.com/ashishbongu/OnWings/issues](https://github.com/ashishbongu/OnWings/issues)
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [React](https://react.dev/)
 - [Vite](https://vitejs.dev/)
