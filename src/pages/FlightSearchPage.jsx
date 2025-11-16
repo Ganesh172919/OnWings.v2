@@ -4,7 +4,6 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import AirplaneImg from "../assets/hero-airplane-right.jpg";
 
 const FlightSearchPage = () => {
-  // letter-by-letter animation data
   const title = useMemo(() => "WHERE TO FLY?".split(""), []);
 
   // parallax for airplane visual
@@ -24,7 +23,6 @@ const FlightSearchPage = () => {
         <div className="pointer-events-none absolute -inset-x-32 top-10 h-48 bg-gradient-to-t from-white/80 to-transparent rounded-xl opacity-70 blur-md" />
         <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 lg:py-24">
           <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-8">
-            {/* Title + Subtitle */}
             <div className="lg:col-span-6 text-center lg:text-left">
               <motion.h1
                 className="font-outfit font-extrabold leading-tight text-4xl md:text-6xl text-slate-900"

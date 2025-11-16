@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { fetchFlights } from "../../store/slices/flightSlice";
 import { Search, ArrowRightLeft, ChevronDown, Plus, Minus, AlertCircle } from "lucide-react";
@@ -11,9 +11,7 @@ import { validateAirportCode, validateFutureDate, validatePassengerCount } from 
 const FlightSearchForm = () => {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-
   const [date, setDate] = useState(new Date());
-
   const [errors, setErrors] = useState({
     from: "",
     to: "",
@@ -21,22 +19,21 @@ const FlightSearchForm = () => {
     returnDate: "",
     passengers: "",
   });
-
   const [tripType, setTripType] = useState("oneWay");
-
   const [returnDate, setReturnDate] = useState(null);
-
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [isPassengerDropdownOpen, setIsPassengerDropdownOpen] = useState(false);
-
   const [fromSuggestions, setFromSuggestions] = useState([]);
   const [toSuggestions, setToSuggestions] = useState([]);
 
   const passengerDropdownRef = useRef(null);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Determine if we're on the search page
+  const isSearchPage = location.pathname === "/search" || location.pathname === "/flights";
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -57,7 +54,6 @@ const FlightSearchForm = () => {
       passengers: "",
     };
 
-    // Validate source airport
     if (!from) {
       newErrors.from = "Source airport is required";
     } else if (from.length !== 3) {
@@ -69,7 +65,6 @@ const FlightSearchForm = () => {
       }
     }
 
-    // Validate destination airport
     if (!to) {
       newErrors.to = "Destination airport is required";
     } else if (to.length !== 3) {
@@ -81,19 +76,16 @@ const FlightSearchForm = () => {
       }
     }
 
-    // Check if same airport
     if (from && to && from.toUpperCase() === to.toUpperCase()) {
       newErrors.from = "Source and destination cannot be the same";
       newErrors.to = "Source and destination cannot be the same";
     }
 
-    // Validate departure date
     const dateError = validateFutureDate(date, "Departure date");
     if (dateError) {
       newErrors.date = dateError;
     }
 
-    // Validate return date for round trip
     if (tripType === "roundTrip") {
       if (!returnDate) {
         newErrors.returnDate = "Return date is required for round trip";
@@ -107,7 +99,6 @@ const FlightSearchForm = () => {
       }
     }
 
-    // Validate passengers
     const totalPassengers = adults + children;
     const passengerError = validatePassengerCount(totalPassengers);
     if (passengerError) {
@@ -204,10 +195,38 @@ const FlightSearchForm = () => {
     return parts.length > 0 ? parts.join(', ') : 'Select passengers';
   };
 
-  const activeTripButton =
-    "bg-red-700 text-white font-semibold py-2 px-3 rounded-none text-sm sm:text-base";
-  const inactiveTripButton =
-    "bg-transparent text-gray-500 font-semibold py-2 px-3 rounded-none border border-gray-400 hover:bg-gray-100 text-sm sm:text-base";
+  // Conditional styles based on page
+  const activeTripButton = isSearchPage
+    ? "bg-red-700 text-white font-semibold py-2 px-3 rounded-none text-sm sm:text-base"
+    : "bg-red-700 text-white font-semibold py-2 px-3 rounded-none text-sm sm:text-base";
+  
+  const inactiveTripButton = isSearchPage
+    ? "bg-transparent text-gray-700 font-semibold py-2 px-3 rounded-none border border-gray-400 hover:bg-gray-100 text-sm sm:text-base"
+    : "bg-transparent text-gray-500 font-semibold py-2 px-3 rounded-none border border-gray-400 hover:bg-gray-100 text-sm sm:text-base";
+
+  const labelClass = isSearchPage
+    ? "block text-sm font-bold text-gray-700 text-left"
+    : "block text-sm font-bold text-white text-left";
+
+  const inputClass = (hasError) => isSearchPage
+    ? `mt-1 block w-full p-2 sm:p-3 text-sm sm:text-base bg-transparent text-gray-900 border-0 border-b-2 ${
+        hasError ? "border-red-600" : "border-gray-300"
+      } focus:border-red-600 focus:ring-0 rounded-none placeholder:text-gray-400`
+    : `mt-1 block w-full p-2 sm:p-3 text-sm sm:text-base bg-transparent text-white border-0 border-b-2 ${
+        hasError ? "border-red-600" : "border-gray-300"
+      } focus:border-red-600 focus:ring-0 rounded-none placeholder:text-slate-400`;
+
+  const swapButtonClass = isSearchPage
+    ? "p-2 text-red-700 hover:text-red-800 transition-colors"
+    : "p-2 text-red-700 hover:text-primary transition-colors";
+
+  const passengerButtonClass = (hasError) => isSearchPage
+    ? `mt-1 block w-full p-2 sm:p-3 ${adults + children === 0 ? 'text-gray-400' : 'text-gray-900'} bg-transparent border-0 border-b-2 ${
+        hasError ? "border-red-600" : "border-gray-400"
+      } focus:border-red-600 rounded-none text-sm sm:text-base text-left flex items-center justify-between`
+    : `mt-1 block w-full p-2 sm:p-3 text-white bg-transparent border-0 border-b-2 ${
+        hasError ? "border-red-600" : "border-gray-400"
+      } focus:border-red-600 rounded-none text-sm sm:text-base text-left flex items-center justify-between`;
 
   return (
     <form
@@ -239,10 +258,7 @@ const FlightSearchForm = () => {
       <div className="md:col-span-6 flex flex-col md:flex-row items-end gap-x-4 gap-y-4">
         {/* Source Input */}
         <div className="w-full relative">
-          <label
-            htmlFor="from"
-            className="block text-sm font-bold text-white text-left"
-          >
+          <label htmlFor="from" className={labelClass}>
             Source
           </label>
           <input
@@ -251,9 +267,7 @@ const FlightSearchForm = () => {
             value={from}
             onChange={handleFromChange}
             placeholder="Source"
-            className={`mt-1 block w-full p-2 sm:p-3 text-sm sm:text-base bg-transparent text-white border-0 border-b-2 ${
-              errors.from ? "border-red-600" : "border-gray-300"
-            } focus:border-red-600 focus:ring-0 rounded-none placeholder:text-slate-400`}
+            className={inputClass(errors.from)}
             autoComplete="off"
             onBlur={() => setTimeout(() => setFromSuggestions([]), 100)}
             onFocus={handleFromChange}
@@ -282,17 +296,14 @@ const FlightSearchForm = () => {
         <button
           type="button"
           onClick={handleSwap}
-          className="p-2 text-red-700 hover:text-primary transition-colors"
+          className={swapButtonClass}
           title="Swap source and destination"
         >
           <ArrowRightLeft className="h-5 w-5" />
         </button>
         {/* Destination Input */}
         <div className="w-full relative">
-          <label
-            htmlFor="to"
-            className="block text-sm font-bold text-white text-left"
-          >
+          <label htmlFor="to" className={labelClass}>
             Destination
           </label>
           <input
@@ -301,9 +312,7 @@ const FlightSearchForm = () => {
             value={to}
             onChange={handleToChange}
             placeholder="Destination"
-            className={`mt-1 block w-full p-2 sm:p-3 text-sm sm:text-base bg-transparent text-white border-0 border-b-2 ${
-              errors.to ? "border-red-600" : "border-gray-300"
-            } focus:border-red-600 focus:ring-0 rounded-none placeholder:text-slate-400`}
+            className={inputClass(errors.to)}
             autoComplete="off"
             onBlur={() => setTimeout(() => setToSuggestions([]), 100)}
             onFocus={handleToChange}
@@ -334,10 +343,7 @@ const FlightSearchForm = () => {
       <div
         className={tripType === "oneWay" ? "md:col-span-3" : "md:col-span-2"}
       >
-        <label
-          htmlFor="depart-date"
-          className="block text-sm font-bold text-white text-left"
-        >
+        <label htmlFor="depart-date" className={labelClass}>
           Depart Date
         </label>
         <ArkDatePicker
@@ -347,7 +353,8 @@ const FlightSearchForm = () => {
             setDate(newDate);
             setErrors(prev => ({ ...prev, date: "" }));
           }}
-          className="text-white"
+          className={isSearchPage ? "text-gray-900" : "text-white !text-white"}
+          style={isSearchPage ? {} : { color: 'white' }}
         />
         {errors.date && (
           <div className="flex items-center mt-1 text-red-600 text-xs">
@@ -359,10 +366,7 @@ const FlightSearchForm = () => {
 
       {tripType === "roundTrip" && (
         <div className="md:col-span-2">
-          <label
-            htmlFor="return-date"
-            className="block text-sm font-bold text-white text-left"
-          >
+          <label htmlFor="return-date" className={labelClass}>
             Return
           </label>
           <ArkDatePicker
@@ -373,6 +377,8 @@ const FlightSearchForm = () => {
               setErrors(prev => ({ ...prev, returnDate: "" }));
             }}
             placeholder="Select date"
+            className={isSearchPage ? "text-gray-900" : "text-white !text-white"}
+            style={isSearchPage ? {} : { color: 'white' }}
           />
           {errors.returnDate && (
             <div className="flex items-center mt-1 text-red-600 text-xs">
@@ -388,21 +394,16 @@ const FlightSearchForm = () => {
         className={tripType === "oneWay" ? "md:col-span-3" : "md:col-span-2"}
         ref={passengerDropdownRef}
       >
-        <label
-          htmlFor="passengers"
-          className="block text-sm font-bold text-white text-left"
-        >
+        <label htmlFor="passengers" className={labelClass}>
           Passengers
         </label>
         <div className="relative">
           <button
             type="button"
             onClick={() => setIsPassengerDropdownOpen(!isPassengerDropdownOpen)}
-            className={`mt-1 block w-full p-2 sm:p-3 text-white bg-transparent border-0 border-b-2 ${
-              errors.passengers ? "border-red-600" : "border-gray-400"
-            } focus:border-red-600 rounded-none text-slate-900 text-sm sm:text-base text-left flex items-center justify-between`}
+            className={passengerButtonClass(errors.passengers)}
           >
-            <span className={adults + children === 0 ? "text-slate-400" : ""}>
+            <span className={adults + children === 0 ? (isSearchPage ? "text-gray-400" : "text-slate-400") : ""}>
               {getPassengerText()}
             </span>
             <ChevronDown className={`h-4 w-4 transition-transform ${isPassengerDropdownOpen ? 'rotate-180' : ''}`} />

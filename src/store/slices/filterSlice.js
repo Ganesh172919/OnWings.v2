@@ -3,9 +3,9 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   priceRange: { min: 0, max: 10000 },
   selectedAirlines: [],
-  departureTimeSlot: 'all', // 'all' | 'early-morning' | 'morning' | 'afternoon' | 'evening'
-  stopsFilter: 'all', // 'all' | 'non-stop' | '1-stop' | '2-plus-stops'
-  sortOption: 'price-low-high', // 'price-low-high' | 'price-high-low' | 'departure-early-late' | 'departure-late-early' | 'duration-shortest'
+  departureTimeSlot: 'all',
+  stopsFilter: 'all', 
+  sortOption: 'price-low-high', 
 };
 
 const filterSlice = createSlice({

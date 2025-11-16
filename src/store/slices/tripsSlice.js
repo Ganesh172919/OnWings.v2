@@ -10,10 +10,9 @@ const tripsSlice = createSlice({
   reducers: {
     addTrip: (state, action) => {
       const trip = action.payload;
-      // Idempotent: only add if bookingId doesn't exist
       const exists = state.pastTrips.some(t => t.bookingId === trip.bookingId);
       if (!exists) {
-        state.pastTrips.unshift(trip); // Add to beginning (newest first)
+        state.pastTrips.unshift(trip); 
       }
     },
     addTrips: (state, action) => {
@@ -31,7 +30,6 @@ const tripsSlice = createSlice({
   },
 });
 
-// Actions
 export const { addTrip, addTrips, clearTrips } = tripsSlice.actions;
 
 // Selectors
